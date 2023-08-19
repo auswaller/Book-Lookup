@@ -34,14 +34,15 @@ const resolvers = {
       
             return { token, user };
           },
-        saveBook: async (parent, bookData, context) => {
-                console.log(context);
+        saveBook: async (parent, bookData, userInfo) => {
+                console.log(userInfo);
                 console.log(bookData);
                 const updatedUser = await User.findOneAndUpdate(
-                    { _id: context.user._id},
+                    {},
                     { $addToSet: { savedBooks: bookData } },
                     { new: true }
                 );
+                console.log(updatedUser);
                 return updatedUser;
         },
 
