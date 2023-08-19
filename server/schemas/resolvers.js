@@ -1,3 +1,6 @@
+const { signToken, AuthenticationError } = require('../utils/auth');
+const { User } = require('../models');
+
 const resolvers = {
     Query: {
         me: async (parent, args, context) => {
@@ -31,16 +34,17 @@ const resolvers = {
       
             return { token, user };
           },
-        saveBook: async (parent, { bookData }, context) => {
-            if (context.user) {
-                const updatedUser = await User.findByIdAndUpdate(
-                    { _id: context.user._id },
-                    { $push: { savedBooks: bookData } },
+        saveBook: async (parent, bookData, context) => {
+                console.log(context);
+                console.log(bookData);
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: context.user._id},
+                    { $addToSet: { savedBooks: bookData } },
                     { new: true }
                 );
                 return updatedUser;
-            }
         },
+
         removeBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndDelete(
