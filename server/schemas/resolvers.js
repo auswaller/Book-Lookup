@@ -4,12 +4,11 @@ const { User } = require('../models');
 const resolvers = {
     Query: {
         me: async (parent, args, context) => {
-            if (context.user) {
-                const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
+                const userData = await User.findOne({})
+                .select('-__v -password')
+                .populate('savedBooks');
                 return userData;
-            }
-            throw new AuthenticationError('Not logged in');
-        },
+        }
     },
     Mutation: {
         addUser: async (parent, { username, email, password }) => {
@@ -34,28 +33,23 @@ const resolvers = {
       
             return { token, user };
           },
-        saveBook: async (parent, bookData, userInfo) => {
-                console.log(userInfo);
-                console.log(bookData);
+        saveBook: async (parent, bookData) => {
                 const updatedUser = await User.findOneAndUpdate(
                     {},
                     { $addToSet: { savedBooks: bookData } },
-                    { new: true }
+                    { new: true, runValidators: true }
                 );
-                console.log(updatedUser);
                 return updatedUser;
         },
 
-        removeBook: async (parent, { bookId }, context) => {
-            if (context.user) {
-                const updatedUser = await User.findOneAndDelete(
-                    { _id: context.user._id },
-                    { $pull: { savedBooks: { bookId: bookId } } },
-                    { new: true }
-                );
-                return updatedUser;
-            }
-        },
+        removeBook: async (parent, { bookId }) => {
+                  const updatedUser = await User.findOneAndUpdate(
+                      { },
+                      { $pull: { savedBooks: { bookId: bookId } } },
+                      { new: true }
+                  );
+                  return updatedUser;
+              },
     },  
 };
 module.exports = resolvers;
