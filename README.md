@@ -6,7 +6,7 @@ This is a book lookup app that allows you to search for books and save them to a
 
 ## Screenshot
 
-![Screenshot of the installed app running](assets\images\Screenshot.png)
+![Screenshot of the installed app running](./assets/images/Screenshot.png)
 
 
 ## Link
